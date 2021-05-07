@@ -31,3 +31,4 @@ jobs:
         with:
           # The chart-releaser version to use (default: v1.2.0)
           version: v1.2.0
+          charts_dir: packetbeat
