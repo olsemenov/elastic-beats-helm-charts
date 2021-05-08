@@ -2,10 +2,10 @@ apiVersion: v1
 entries:
   packetbeat:
   - apiVersion: v1
-    appVersion: 7.12.0
-    created: "2021-05-08T02:03:10.26905356+03:00"
+    appVersion: 7.12.0-DRAFT
+    created: "2021-05-08T19:06:58.456578664+03:00"
     description: NOT official Elastic helm chart for packetbeat
-    digest: d6cc151fae8035b9cf0093bd450d1b7e4c9177b852af90ee09d820d88e44ff1e
+    digest: caa382cbeef2b2da030e1102cd89ab41f156879982c29df5d9f337a0c5560aa5
     icon: https://helm.elastic.co/icons/beats.png
     maintainers:
     - email: oleksandr.semenov@gmail.com
@@ -15,6 +15,6 @@ entries:
     - https://github.com/elastic/beats
     - https://github.com/olsemenov/elastic-beats-helm-charts
     urls:
-    - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/packetbeat-7.12.0/packetbeat-7.12.0.tgz
-    version: 7.12.0
-generated: "2021-05-08T02:03:10.268208949+03:00"
+    - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/packetbeat-7.12.0/packetbeat-7.12.0-DRAFT.tgz
+    version: 7.12.0-DRAFT
+generated: "2021-05-08T19:06:58.456144515+03:00"
