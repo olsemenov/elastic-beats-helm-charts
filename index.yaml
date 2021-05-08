@@ -17,4 +17,21 @@ entries:
     urls:
     - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/packetbeat-7.12.0-DRAFT/packetbeat-7.12.0-DRAFT.tgz
     version: 7.12.0-DRAFT
-generated: "2021-05-08T19:06:58.456144515+03:00"
+  auditbeat:
+  - apiVersion: v1
+    appVersion: 7.12.0-DRAFT
+    created: "2021-05-08T22:37:41.892193956+03:00"
+    description: NOT official Elastic helm chart for packetbeat
+    digest: 94722e9edb512fba3e3a037371b310033e54be87682c2076c67244e15c674669
+    icon: https://helm.elastic.co/icons/beats.png
+    maintainers:
+    - email: oleksandr.semenov@gmail.com
+      name: Elastic
+    name: auditbeat
+    sources:
+    - https://github.com/elastic/beats
+    - https://github.com/olsemenov/elastic-beats-helm-charts
+    urls:
+    - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/auditbeat-7.12.0-DRAFT/auditbeat-7.12.0-DRAFT.tgz
+    version: 7.12.0-DRAFT
+generated: "2021-05-08T22:37:41.891744938+03:00"
