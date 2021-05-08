@@ -72,11 +72,6 @@ spec:
       - name: etc
         hostPath:
           path: /etc
-      - name: data
-        hostPath:
-          # When auditbeat runs as non-root user, this directory needs to be writable by group (g+w).
-          path: /var/lib/auditbeat-data
-          type: DirectoryOrCreate
       - name: run-containerd
         hostPath:
           path: /run/containerd
