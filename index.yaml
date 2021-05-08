@@ -15,6 +15,6 @@ entries:
     - https://github.com/elastic/beats
     - https://github.com/olsemenov/elastic-beats-helm-charts
     urls:
-    - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/packetbeat-7.12.0/packetbeat-7.12.0-DRAFT.tgz
+    - https://github.com/olsemenov/elastic-beats-helm-charts/releases/download/packetbeat-7.12.0-DRAFT/packetbeat-7.12.0-DRAFT.tgz
     version: 7.12.0-DRAFT
 generated: "2021-05-08T19:06:58.456144515+03:00"
