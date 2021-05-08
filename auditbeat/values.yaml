@@ -1,0 +1,195 @@
+---
+# Allows you to add any config files in /usr/share/auditbeat
+# such as auditbeat.yml
+auditbeatConfig:
+  system.yml: |-
+    - module: file_integrity
+      paths:
+      - /hostfs/bin
+      - /hostfs/usr/bin
+      - /hostfs/sbin
+      - /hostfs/usr/sbin
+      - /hostfs/etc
+      exclude_files:
+      - '(?i)\.sw[nop]$'
+      - '~$'
+      - '/\.git($|/)'
+      scan_at_start: true
+      scan_rate_per_sec: 50 MiB
+      max_file_size: 100 MiB
+      hash_types: [sha1]
+      recursive: true
+    - module: auditd
+      audit_rules: |
+        # Executions
+        -a always,exit -F arch=b64 -S execve,execveat -k exec
+        # Unauthorized access attempts
+        -a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EACCES -k access
+        -a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EPERM -k access
+  auditbeat.yml: |
+    auditbeat.config.modules:
+      # Mounted `auditbeat-daemonset-modules` configmap:
+      path: /usr/share/auditbeat/*.yml
+      # Reload module configs as they change:
+      reload.enabled: false
+    # When using containerd as runtime, a configuration like the following one
+    # can be used to monitor files in containers using autodiscover.
+    #auditbeat.autodiscover:
+    #  providers:
+    #  - type: kubernetes
+    #    host: ${NODE_NAME}
+    #    templates:
+    #      - config:
+    #        - module: 'file_integrity'
+    #          paths:
+    #            - '/run/containerd/io.containerd.runtime.v1.linux/k8s.io/${data.kubernetes.container.id}/rootfs/bin'
+    #            - '/run/containerd/io.containerd.runtime.v1.linux/k8s.io/${data.kubernetes.container.id}/rootfs/etc'
+    #          scan_at_start: false
+    #          recursive: true
+    processors:
+      - add_cloud_metadata:
+      - add_process_metadata:
+          match_pids: ['process.pid']
+          include_fields: ['container.id']
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME}
+          default_indexers.enabled: false
+          default_matchers.enabled: false
+          indexers:
+            - container:
+          matchers:
+            - fields.lookup_fields: ['container.id']
+    cloud.id: ${ELASTIC_CLOUD_ID}
+    cloud.auth: ${ELASTIC_CLOUD_AUTH}
+    output.elasticsearch:
+      hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
+
+# Extra environment variables to append to the DaemonSet pod spec.
+# This will be appended to the current 'env:' key. You can use any of the kubernetes env
+# syntax here
+extraEnvs: []
+#  - name: MY_ENVIRONMENT_VAR
+#    value: the_value_goes_here
+
+extraVolumeMounts: []
+  # - name: extras
+  #   mountPath: /usr/share/extras
+  #   readOnly: true
+
+extraVolumes: []
+  # - name: extras
+  #   emptyDir: {}
+
+extraContainers: ""
+# - name: dummy-init
+#   image: busybox
+#   command: ['echo', 'hey']
+
+extraInitContainers: []
+# - name: dummy-init
+#   image: busybox
+#   command: ['echo', 'hey']
+
+envFrom: []
+# - configMapRef:
+#     name: configmap-name
+
+# Root directory where auditbeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
+hostPathRoot: /var/lib
+hostNetworking: false
+image: "docker.elastic.co/beats/auditbeat"
+imageTag: "7.12.0"
+imagePullPolicy: "IfNotPresent"
+imagePullSecrets: []
+
+livenessProbe:
+#   exec:
+#     command:
+#       - sh
+#       - -c
+#       - |
+#         #!/usr/bin/env bash -e
+#         curl --fail 127.0.0.1:5066
+#   failureThreshold: 3
+#   initialDelaySeconds: 10
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+
+readinessProbe:
+#   exec:
+#     command:
+#       - sh
+#       - -c
+#       - |
+#         #!/usr/bin/env bash -e
+#         auditbeat test output
+#   failureThreshold: 3
+#   initialDelaySeconds: 10
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+
+# Whether this chart should self-manage its service account, role, and associated role binding.
+managedServiceAccount: true
+
+# additionals labels
+labels: {}
+
+podAnnotations: {}
+  # iam.amazonaws.com/role: es-cluster
+
+# Various pod security context settings. Bear in mind that many of these have an impact on auditbeat functioning properly.
+#
+# - User that the container will execute as. Typically necessary to run as root (0) in order to properly collect host container logs.
+# - Whether to execute the auditbeat containers as privileged containers. Typically not necessarily unless running within environments such as OpenShift.
+podSecurityContext:
+  runAsUser: 0
+  privileged: false
+  capabilities:
+    add:
+    - AUDIT_READ
+    - AUDIT_WRITE
+    - AUDIT_CONTROL
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+  limits:
+    cpu: "300m"
+    memory: "200Mi"
+
+# Custom service account override that the pod will use
+serviceAccount: ""
+
+# Annotations to add to the ServiceAccount that is created if the serviceAccount value isn't set.
+serviceAccountAnnotations: {}
+  # eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/k8s.clustername.namespace.serviceaccount
+
+# A list of secrets and their paths to mount inside the pod
+# This is useful for mounting certificates for security other sensitive values
+secretMounts: []
+#  - name: auditbeat-certificates
+#    secretName: auditbeat-certificates
+#    path: /usr/share/auditbeat/certs
+
+# How long to wait for auditbeat pods to stop gracefully
+terminationGracePeriod: 30
+
+tolerations: []
+
+nodeSelector: {}
+
+affinity: {}
+
+# This is the PriorityClass settings as defined in
+# https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+priorityClassName: ""
+
+updateStrategy: RollingUpdate
+
+# Override various naming aspects of this chart
+# Only edit these if you know what you're doing
+nameOverride: ""
+fullnameOverride: ""
